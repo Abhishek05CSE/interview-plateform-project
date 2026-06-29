@@ -6,6 +6,8 @@ import {serve } from 'inngest/express'
 import { inngest, functions } from "./lib/inngest.js";
 
  const app = express();
+import { connectDB } from './lib/db.js';
+const app = express();
 
 const __dirname = path.resolve();
 
@@ -31,7 +33,18 @@ if (ENV.NODE_ENV === 'production') {
   });
 }
 
+const startServer = async () => {
+  try {
+    await connectDB();  
+    app.listen(ENV.PORT, () => {    
+      console.log(`Server is running on port:${ENV.PORT}`);
+      } 
+    );
+  } 
+  catch (error) { 
+    console.error('Error starting server', error);  
+    process.exit(1);
+  }
+}
 
-app.listen(ENV.PORT, () => {
-  console.log(`Server is running on port:${ENV.PORT}`);
-});
+startServer();
